@@ -18,9 +18,11 @@ export default function SchedulePage() {
         const response = activeSource === 'otakudesu' 
           ? await otakudesuApi.getSchedule()
           : await samehadakuApi.getSchedule();
-        setSchedule(response.data.data);
+        const data = response.data.data;
+        setSchedule(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching schedule:', error);
+        setSchedule([]);
       } finally {
         setLoading(false);
       }
@@ -71,8 +73,8 @@ export default function SchedulePage() {
             <div key={index} className="glass-effect p-6 rounded-lg">
               <h2 className="text-2xl font-bold mb-4">{daySchedule.day}</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {daySchedule.animeList?.map((anime) => (
-                  <AnimeCard key={anime.slug || anime.id} anime={anime} source={activeSource} />
+                {daySchedule.animeList?.map((anime, animeIndex) => (
+                  <AnimeCard key={anime.slug || anime.id || `anime-${animeIndex}`} anime={anime} source={activeSource} />
                 ))}
               </div>
             </div>
