@@ -18,9 +18,11 @@ export default function GenresPage() {
         const response = activeSource === 'otakudesu' 
           ? await otakudesuApi.getGenres()
           : await samehadakuApi.getGenres();
-        setGenres(response.data.data);
+        const data = response.data.data;
+        setGenres(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching genres:', error);
+        setGenres([]);
       } finally {
         setLoading(false);
       }
