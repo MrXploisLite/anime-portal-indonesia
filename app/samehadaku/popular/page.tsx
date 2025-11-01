@@ -16,9 +16,11 @@ export default function SamehadakuPopularPage() {
       try {
         setLoading(true);
         const response = await samehadakuApi.getPopular(page);
-        setAnimeList(response.data.data.animeList || response.data.data);
+        const data = response.data.data.animeList || response.data.data;
+        setAnimeList(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching popular anime:', error);
+        setAnimeList([]);
       } finally {
         setLoading(false);
       }
@@ -39,8 +41,8 @@ export default function SamehadakuPopularPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-            {animeList.map((anime) => (
-              <AnimeCard key={anime.slug || anime.id} anime={anime} source="samehadaku" />
+            {animeList.map((anime, index) => (
+              <AnimeCard key={anime.slug || anime.id || `anime-${index}`} anime={anime} source="samehadaku" />
             ))}
           </div>
 

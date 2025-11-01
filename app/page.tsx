@@ -17,12 +17,22 @@ export default function HomePage() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [otakudesuRes, samehadakuRes] = await Promise.all([
+        const results = await Promise.allSettled([
           otakudesuApi.getHome(),
           samehadakuApi.getHome(),
         ]);
-        setOtakudesuData(otakudesuRes.data.data);
-        setSamehadakuData(samehadakuRes.data.data);
+        
+        if (results[0].status === 'fulfilled') {
+          setOtakudesuData(results[0].value.data.data);
+        } else {
+          console.error('Error fetching Otakudesu data:', results[0].reason);
+        }
+        
+        if (results[1].status === 'fulfilled') {
+          setSamehadakuData(results[1].value.data.data);
+        } else {
+          console.error('Error fetching Samehadaku data:', results[1].reason);
+        }
       } catch (error) {
         console.error('Error fetching home data:', error);
       } finally {
@@ -85,8 +95,8 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {currentData.ongoing.slice(0, 12).map((anime) => (
-              <AnimeCard key={anime.slug || anime.id} anime={anime} source={activeSource} />
+            {currentData.ongoing.slice(0, 12).map((anime, index) => (
+              <AnimeCard key={anime.slug || anime.id || `ongoing-${index}`} anime={anime} source={activeSource} />
             ))}
           </div>
         </section>
@@ -104,8 +114,8 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {currentData.completed.slice(0, 12).map((anime) => (
-              <AnimeCard key={anime.slug || anime.id} anime={anime} source={activeSource} />
+            {currentData.completed.slice(0, 12).map((anime, index) => (
+              <AnimeCard key={anime.slug || anime.id || `completed-${index}`} anime={anime} source={activeSource} />
             ))}
           </div>
         </section>
@@ -123,8 +133,8 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {samehadakuData.popular.slice(0, 12).map((anime) => (
-              <AnimeCard key={anime.slug || anime.id} anime={anime} source="samehadaku" />
+            {samehadakuData.popular.slice(0, 12).map((anime, index) => (
+              <AnimeCard key={anime.slug || anime.id || `popular-${index}`} anime={anime} source="samehadaku" />
             ))}
           </div>
         </section>

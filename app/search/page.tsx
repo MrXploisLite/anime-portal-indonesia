@@ -26,7 +26,8 @@ function SearchContent() {
         const response = activeSource === 'otakudesu' 
           ? await otakudesuApi.search(query)
           : await samehadakuApi.search(query);
-        setAnimeList(response.data.data.animeList || response.data.data || []);
+        const data = response.data.data.animeList || response.data.data || [];
+        setAnimeList(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error searching anime:', error);
         setAnimeList([]);
@@ -88,8 +89,8 @@ function SearchContent() {
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {animeList.map((anime) => (
-            <AnimeCard key={anime.slug || anime.id} anime={anime} source={activeSource} />
+          {animeList.map((anime, index) => (
+            <AnimeCard key={anime.slug || anime.id || `anime-${index}`} anime={anime} source={activeSource} />
           ))}
         </div>
       )}

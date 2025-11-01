@@ -19,9 +19,11 @@ export default function CompletedPage() {
         const response = activeSource === 'otakudesu' 
           ? await otakudesuApi.getCompleted(page)
           : await samehadakuApi.getCompleted(page);
-        setAnimeList(response.data.data.animeList || response.data.data);
+        const data = response.data.data.animeList || response.data.data;
+        setAnimeList(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Error fetching completed anime:', error);
+        setAnimeList([]);
       } finally {
         setLoading(false);
       }
@@ -70,8 +72,8 @@ export default function CompletedPage() {
       ) : (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-8">
-            {animeList.map((anime) => (
-              <AnimeCard key={anime.slug || anime.id} anime={anime} source={activeSource} />
+            {animeList.map((anime, index) => (
+              <AnimeCard key={anime.slug || anime.id || `anime-${index}`} anime={anime} source={activeSource} />
             ))}
           </div>
 
